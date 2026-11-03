@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1120" />
+      <stop offset="55%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <rect x="36" y="36" width="440" height="440" rx="88" fill="none" stroke="#38BDF8" stroke-width="6" stroke-opacity="0.28" />
+  <!-- Acoustic wave & speech badge -->
+  <g transform="translate(0, -14)">
+    <rect x="116" y="210" width="24" height="92" rx="12" fill="#38BDF8" />
+    <rect x="160" y="164" width="24" height="184" rx="12" fill="url(#accent)" />
+    <rect x="204" y="128" width="24" height="256" rx="12" fill="#FFFFFF" />
+    <rect x="248" y="152" width="24" height="208" rx="12" fill="url(#accent)" />
+    <rect x="292" y="108" width="24" height="296" rx="12" fill="#FFFFFF" />
+    <rect x="336" y="172" width="24" height="168" rx="12" fill="url(#accent)" />
+    <rect x="380" y="216" width="24" height="80" rx="12" fill="#10B981" />
+  </g>
+  <text x="256" y="438" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="46" fill="#F8FAFC" letter-spacing="2">LEXISPEAK</text>
+</svg>

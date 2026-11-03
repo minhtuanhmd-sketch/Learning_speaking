@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="vi" class="dark">
+  <head>
+    <script>
+      // Global resilience guard for browser extensions (e.g. Urban VPN eppiocemhmnlbhjplcgkofciiegomcon):
+      // 1. Intercepts Object.defineProperty & Reflect.defineProperty so no script can ever define 'fetch' with only a getter (missing setter).
+      // 2. Ensures window.fetch and Window.prototype.fetch always have both getter and setter.
+      // 3. Filters console.error, window.onerror, and error listeners for extension-originated noise.
+      (function () {
+        try {
+          var isExtNoise = function (str) {
+            if (!str) return false;
+            var s = String(str);
+            return (
+              s.indexOf('Cannot set property fetch') !== -1 ||
+              s.indexOf('chrome-extension:') !== -1 ||
+              s.indexOf('eppiocemhmnlbhjplcgkofciiegomcon') !== -1 ||
+              s.indexOf('requests.js') !== -1 ||
+              s.indexOf('executors/200.js') !== -1
+            );
+          };
+
+          var origFetch = typeof window !== 'undefined' && window.fetch ? window.fetch.bind(window) : undefined;
+          if (typeof window !== 'undefined') {
+            window._activeFetch = origFetch;
+          }
+
+          // Sanitize any property descriptor for 'fetch' so it can NEVER be getter-only or read-only
+          var sanitizeFetchDescriptor = function (desc) {
+            if (!desc || typeof desc !== 'object') return desc;
+            if ('get' in desc || 'set' in desc) {
+              var origGet = desc.get;
+              var origSet = desc.set;
+              var localVal;
+              var hasLocalVal = false;
+              return {
+                configurable: true,
+                enumerable: desc.enumerable !== false,
+                get: function () {
+                  if (hasLocalVal) return localVal;
+                  if (origGet) {
+                    try {
+                      return origGet.call(this);
+                    } catch (_) {}
+                  }
+                  return (typeof window !== 'undefined' && window._activeFetch) || origFetch;
+                },
+                set: function (fn) {
+                  if (typeof fn === 'function') {
+                    localVal = fn;
+                    hasLocalVal = true;
+                    if (typeof window !== 'undefined') {
+                      window._activeFetch = fn;
+                    }
+                  }
+                  if (origSet) {
+                    try {
+                      origSet.call(this, fn);
+                    } catch (_) {}
+                  }
+                },
+              };
+            }
+            return {
+              configurable: true,
+              enumerable: desc.enumerable !== false,
+              writable: true,
+              value: typeof desc.value === 'function' ? desc.value : origFetch,
+            };
+          };
+
+          var isFetchTarget = function (target, prop) {
+            if (prop !== 'fetch') return false;
+            if (typeof window !== 'undefined' && target === window) return true;
+            if (typeof Window !== 'undefined' && target === Window.prototype) return true;
+            if (typeof globalThis !== 'undefined' && target === globalThis) return true;
+            return false;
+          };
+
+          // Patch Object.defineProperty
+          var origDefineProperty = Object.defineProperty;
+          Object.defineProperty = function (target, prop, descriptor) {
+            if (isFetchTarget(target, prop)) {
+              return origDefineProperty.call(Object, target, prop, sanitizeFetchDescriptor(descriptor));
+            }
+            return origDefineProperty.call(Object, target, prop, descriptor);
+          };
+
+          // Patch Object.defineProperties
+          if (Object.defineProperties) {
+            var origDefineProperties = Object.defineProperties;
+            Object.defineProperties = function (target, props) {
+              if (props && typeof props === 'object' && 'fetch' in props && isFetchTarget(target, 'fetch')) {
+                var cloned = Object.assign({}, props);
+                cloned.fetch = sanitizeFetchDescriptor(props.fetch);
+                return origDefineProperties.call(Object, target, cloned);
+              }
+              return origDefineProperties.call(Object, target, props);
+            };
+          }
+
+          // Patch Reflect.defineProperty
+          if (typeof Reflect !== 'undefined' && Reflect.defineProperty) {
+            var origReflectDefineProperty = Reflect.defineProperty;
+            Reflect.defineProperty = function (target, prop, descriptor) {
+              if (isFetchTarget(target, prop)) {
+                return origReflectDefineProperty.call(Reflect, target, prop, sanitizeFetchDescriptor(descriptor));
+              }
+              return origReflectDefineProperty.call(Reflect, target, prop, descriptor);
+            };
+          }
+
+          // Immediately configure both Window.prototype.fetch and window.fetch with getter + setter
+          var mutableFetchDesc = sanitizeFetchDescriptor({
+            get: function () {
+              return (typeof window !== 'undefined' && window._activeFetch) || origFetch;
+            },
+            configurable: true,
+            enumerable: true,
+          });
+
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            try {
+              origDefineProperty.call(Object, Window.prototype, 'fetch', mutableFetchDesc);
+            } catch (_) {}
+          }
+
+          if (typeof window !== 'undefined') {
+            try {
+              delete window.fetch;
+            } catch (_) {}
+            try {
+              origDefineProperty.call(Object, window, 'fetch', mutableFetchDesc);
+            } catch (_) {}
+          }
+
+          // Filter console.error to suppress extension interceptor crashes
+          if (typeof console !== 'undefined' && console.error) {
+            var origConsoleError = console.error;
+            console.error = function () {
+              for (var i = 0; i < arguments.length; i++) {
+                var arg = arguments[i];
+                var text = arg && (arg.stack || arg.message) ? arg.stack || arg.message : String(arg);
+                if (isExtNoise(text)) return;
+              }
+              return origConsoleError.apply(console, arguments);
+            };
+          }
+
+          // Wrap EventTarget.prototype.addEventListener so any error listener registered later ignores extension noise
+          if (typeof EventTarget !== 'undefined' && EventTarget.prototype && EventTarget.prototype.addEventListener) {
+            var origAddEventListener = EventTarget.prototype.addEventListener;
+            EventTarget.prototype.addEventListener = function (type, listener, options) {
+              if ((type === 'error' || type === 'unhandledrejection') && typeof listener === 'function') {
+                var wrapped = function (event) {
+                  var msg = (event && event.message) || '';
+                  var src = (event && event.filename) || '';
+                  var err = (event && (event.error || event.reason)) || '';
+                  var stack = err && (err.stack || err.message) ? err.stack || err.message : String(err);
+                  if (isExtNoise(msg) || isExtNoise(src) || isExtNoise(stack)) {
+                    if (event && event.preventDefault) event.preventDefault();
+                    if (event && event.stopImmediatePropagation) event.stopImmediatePropagation();
+                    return true;
+                  }
+                  return listener.apply(this, arguments);
+                };
+                return origAddEventListener.call(this, type, wrapped, options);
+              }
+              return origAddEventListener.call(this, type, listener, options);
+            };
+          }
+
+          var origOnError = window.onerror;
+          window.onerror = function (msg, url, lineNo, columnNo, error) {
+            var combined = (msg || '') + ' ' + (url || '') + ' ' + (error && (error.stack || error.message) ? error.stack || error.message : '');
+            if (isExtNoise(combined)) return true;
+            if (origOnError) return origOnError.apply(this, arguments);
+            return false;
+          };
+
+          window.addEventListener(
+            'error',
+            function (event) {
+              var msg = (event && event.message) || '';
+              var src = (event && event.filename) || '';
+              var err = event && event.error;
+              var stack = err && (err.stack || err.message) ? err.stack || err.message : '';
+              if (isExtNoise(msg) || isExtNoise(src) || isExtNoise(stack)) {
+                if (event.preventDefault) event.preventDefault();
+                if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+                return true;
+              }
+            },
+            true
+          );
+
+          // Proactively purge legacy v2/v3/v4 caches so stale index.html is never served from Service Worker
+          if (typeof caches !== 'undefined' && caches.keys) {
+            caches
+              .keys()
+              .then(function (keys) {
+                keys.forEach(function (k) {
+                  if (k.indexOf('lexispeak-ios-pwa-v5') === -1) {
+                    caches.delete(k);
+                  }
+                });
+              })
+              .catch(function () {});
+          }
+        } catch (_) {}
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LexiSpeak" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <title>LexiSpeak VN — Pattern-Based English Fluency Lab</title>
+    <meta name="description" content="Specialized English Speaking & Conversational Fluency Web Application for Vietnamese learners (CEFR A2–B2) built on Pattern-Based Lexical Learning, Contextual Cloze Recall, and L1-Aware Phonetic Diagnostics." />
+    <meta property="og:title" content="LexiSpeak VN — Pattern-Based English Fluency Lab" />
+    <meta property="og:description" content="Specialized English Speaking & Conversational Fluency Web Application for Vietnamese learners (CEFR A2–B2) built on Pattern-Based Lexical Learning, Contextual Cloze Recall, and L1-Aware Phonetic Diagnostics." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-[#F8FAFC] dark:bg-[#0B1120] text-[#0F172A] dark:text-slate-100 antialiased selection:bg-[#0284C7]/15 selection:text-[#0284C7] overscroll-none overflow-hidden h-[100dvh]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js', { scope: '/', updateViaCache: 'none' })
+            .then((reg) => {
+              reg.update().catch(() => {});
+            })
+            .catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>

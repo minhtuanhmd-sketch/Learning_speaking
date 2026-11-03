@@ -1,0 +1,6 @@
+{
+  "name": "LexiSpeak VN — Pattern-Based English Fluency Lab",
+  "description": "Specialized English Speaking & Conversational Fluency Web Application for Vietnamese learners (CEFR A2–B2) built on Pattern-Based Lexical Learning, Contextual Cloze Recall, and L1-Aware Phonetic Diagnostics.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

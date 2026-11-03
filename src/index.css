@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Fraunces", "Plus Jakarta Sans", "Noto Sans", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", "Noto Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "IBM Plex Mono", "Plus Jakarta Sans", "Noto Sans", monospace;
+}
+
+.font-ipa {
+  font-family: "Noto Sans", "Plus Jakarta Sans", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #F2F2F7;
+    color: #1C1C1E;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .dark body, html.dark body {
+    background-color: #000000;
+    color: #FFFFFF;
+  }
+
+  /* Allow text selection and native input interaction inside form fields */
+  input, select, textarea, [contenteditable="true"], .selectable-text {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+
+  /* Prevent iPhone Safari auto-zoom on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  h1, h2, .font-serif-display {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ==========================================================================
+   APPLE HIG: TWO-TIER MATERIALS & LIQUID GLASS ARCHITECTURE
+   ========================================================================== */
+
+/* 1. FUNCTIONAL LAYER: LIQUID GLASS TOKENS */
+.liquid-glass-regular {
+  background-color: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+}
+
+.dark .liquid-glass-regular {
+  background-color: rgba(28, 28, 30, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.liquid-glass-clear {
+  background-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark .liquid-glass-clear {
+  background-color: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* 2. CONTENT LAYER: STANDARD MATERIALS TOKENS */
+.material-regular {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.dark .material-regular {
+  background-color: #1C1C1E;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+.material-thin {
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.dark .material-thin {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.material-thick {
+  background-color: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .material-thick {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* 3. VIBRANCY SYSTEM COLORS (Apple HIG Semantic Hierarchy) */
+.vibrancy-label {
+  color: #000000;
+}
+.dark .vibrancy-label {
+  color: #FFFFFF;
+}
+
+.vibrancy-secondary {
+  color: #6C6C70;
+}
+.dark .vibrancy-secondary {
+  color: #8E8E93;
+}
+
+.vibrancy-tertiary {
+  color: #AEAEB2;
+}
+.dark .vibrancy-tertiary {
+  color: #636366;
+}
+
+.vibrancy-separator {
+  border-color: rgba(0, 0, 0, 0.06);
+}
+.dark .vibrancy-separator {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* 4. TACTILE HAPTIC TOUCH FEEDBACK */
+.haptic-press {
+  transition: transform 150ms cubic-bezier(0.25, 1, 0.5, 1), opacity 150ms ease-out;
+}
+.haptic-press:active {
+  transform: scale(0.97);
+}
+
+/* Safe Area Insets Helpers */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+}
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), 8px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* GPU Acceleration */
+.gpu-layer,
+.gpu-accelerated,
+button,
+[role="tab"],
+.waveform-bar {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.ios-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+.touch-target {
+  touch-action: manipulation;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
