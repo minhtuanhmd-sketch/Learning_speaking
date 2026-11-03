@@ -665,16 +665,16 @@ export default function App() {
         <main className="flex-1 min-h-0 overflow-hidden flex flex-col">
           {/* TAB 1: 🎙️ LUYỆN TẬP (Bước 1: Điền Từ Cloze → Bước 2: Luyện Nói & Chấm Điểm) */}
           {activeTab === 'studio' && (
-            <div className="h-full flex flex-col p-2.5 sm:p-4 md:p-6 overflow-hidden">
-              <div className="flex-1 min-h-0 flex flex-col max-w-5xl mx-auto w-full gap-3">
+            <div className="h-full flex flex-col px-2.5 py-2 sm:p-4 md:p-6 overflow-hidden">
+              <div className="flex-1 min-h-0 flex flex-col max-w-5xl mx-auto w-full gap-2 sm:gap-3">
                 {/* Compact Context Banner: Standard Regular Material with Continuous Curves */}
-                <div className="shrink-0 p-3 sm:p-4 material-regular rounded-3xl shadow-sm flex flex-col gap-2.5">
-                  {/* Row 1: Quick CEFR Level Pills (A2 | B1 | B2) + Sequential Mode Switch + Pattern Nav */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
+                <div className="shrink-0 p-2.5 sm:p-3.5 material-regular rounded-3xl shadow-sm flex flex-col gap-1.5 sm:gap-2">
+                  {/* Row 1: Quick CEFR Level Pills (A2 | B1 | B2) + Sequential Mode Switch + Pattern Nav (No Overlap) */}
+                  <div className="flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
                       {/* Quick CEFR Level Selector Pills (Segmented Material Control) */}
                       <div
-                        className="inline-flex items-center p-1 rounded-2xl material-thin shrink-0"
+                        className="inline-flex items-center p-0.5 sm:p-1 rounded-2xl material-thin shrink-0"
                         role="group"
                         aria-label="Chọn trình độ CEFR"
                       >
@@ -687,7 +687,7 @@ export default function App() {
                               key={lvl}
                               type="button"
                               onClick={() => handleSelectLevel(lvl)}
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all haptic-press ${
+                              className={`inline-flex items-center gap-0.5 px-2 sm:px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap haptic-press ${
                                 isSelected
                                   ? 'material-regular vibrancy-label shadow-xs'
                                   : isLocked
@@ -695,7 +695,7 @@ export default function App() {
                                   : 'vibrancy-secondary hover:vibrancy-label'
                               }`}
                             >
-                              {isLocked && <Lock className="w-2.5 h-2.5" />}
+                              {isLocked && <Lock className="w-2.5 h-2.5 shrink-0" />}
                               <span>{lvl}</span>
                             </button>
                           );
@@ -710,7 +710,7 @@ export default function App() {
                           setLevelBannerNote(null);
                         }}
                         title="Chuyển đổi giữa Học tuần tự (A2→B1→B2) và Học tự do"
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-2xl text-[11px] font-semibold border transition-all shrink-0 haptic-press ${
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-2xl text-[11px] font-semibold border transition-all whitespace-nowrap shrink-0 haptic-press ${
                           enforceSequentialLock
                             ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30'
                             : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
@@ -718,12 +718,12 @@ export default function App() {
                       >
                         {enforceSequentialLock ? (
                           <>
-                            <Lock className="w-3 h-3" />
+                            <Lock className="w-2.5 h-2.5 shrink-0" />
                             <span>Tuần tự</span>
                           </>
                         ) : (
                           <>
-                            <Unlock className="w-3 h-3" />
+                            <Unlock className="w-2.5 h-2.5 shrink-0" />
                             <span>Tự do</span>
                           </>
                         )}
@@ -735,13 +735,13 @@ export default function App() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto">
                       <button
                         type="button"
                         onClick={() => handleStepPattern(-1)}
                         disabled={(activePattern.patternNumberInLevel || 1) <= 1}
                         aria-label="Mẫu câu trước"
-                        className="px-2.5 py-1.5 text-xs font-semibold rounded-2xl material-thin vibrancy-label hover:opacity-90 disabled:opacity-30 haptic-press"
+                        className="px-2 sm:px-2.5 py-1 text-[11px] sm:text-xs font-semibold rounded-2xl material-thin vibrancy-label hover:opacity-90 disabled:opacity-30 whitespace-nowrap haptic-press"
                       >
                         ← Mẫu #{Math.max(1, (activePattern.patternNumberInLevel || 1) - 1)}
                       </button>
@@ -750,7 +750,7 @@ export default function App() {
                         onClick={() => handleStepPattern(1)}
                         disabled={(activePattern.patternNumberInLevel || 1) >= 60}
                         aria-label="Mẫu câu kế tiếp"
-                        className="px-2.5 py-1.5 text-xs font-semibold rounded-2xl material-thin vibrancy-label hover:opacity-90 disabled:opacity-30 haptic-press"
+                        className="px-2 sm:px-2.5 py-1 text-[11px] sm:text-xs font-semibold rounded-2xl material-thin vibrancy-label hover:opacity-90 disabled:opacity-30 whitespace-nowrap haptic-press"
                       >
                         Mẫu #{Math.min(60, (activePattern.patternNumberInLevel || 1) + 1)} →
                       </button>
@@ -764,7 +764,7 @@ export default function App() {
 
                   {/* Optional Sequential Lock Notice Banner */}
                   {levelBannerNote && (
-                    <div className="px-3.5 py-2 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-wrap items-center justify-between gap-2 text-xs text-amber-950 dark:text-amber-200">
+                    <div className="px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-wrap items-center justify-between gap-2 text-[11px] text-amber-950 dark:text-amber-200">
                       <span>{levelBannerNote}</span>
                       <div className="flex items-center gap-2">
                         <button
@@ -773,7 +773,7 @@ export default function App() {
                             setEnforceSequentialLock(false);
                             setLevelBannerNote(null);
                           }}
-                          className="px-3 py-1 rounded-xl font-bold bg-amber-600 text-white hover:bg-amber-700 haptic-press shadow-2xs"
+                          className="px-2.5 py-0.5 rounded-xl font-bold bg-amber-600 text-white hover:bg-amber-700 haptic-press shadow-2xs"
                         >
                           Chuyển sang Học Tự Do
                         </button>
@@ -789,8 +789,8 @@ export default function App() {
                   )}
 
                   {/* 20-Variation Horizontal Strip (1-20) */}
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 overflow-x-auto flex items-center gap-1.5 py-0.5 no-scrollbar">
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex-1 overflow-x-auto flex items-center gap-1 py-0.5 no-scrollbar">
                       {activePattern.sentences.map((s, idx) => {
                         const isCurrent = idx === currentSentenceIndex;
                         const prog = progressMap[s.id];
@@ -805,9 +805,9 @@ export default function App() {
                               setStudioSubMode('cloze');
                             }}
                             aria-label={`Biến thể ${s.index}/20`}
-                            className={`h-7.5 min-w-[36px] px-2.5 rounded-xl font-mono text-xs font-bold tabular-nums transition-all flex items-center justify-center shrink-0 haptic-press ${
+                            className={`h-7 min-w-[34px] px-2 rounded-xl font-mono text-[11px] font-bold tabular-nums transition-all flex items-center justify-center shrink-0 haptic-press ${
                               isCurrent
-                                ? 'bg-slate-900 text-white dark:bg-white dark:text-black scale-105 shadow-xs'
+                                ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-xs'
                                 : isSpeakingDone
                                 ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
                                 : isClozeDone
@@ -831,46 +831,49 @@ export default function App() {
                           setStudioSubMode('cloze');
                         }}
                         aria-label="Biến thể trước"
-                        className="p-2 rounded-xl material-thin vibrancy-label hover:opacity-90 disabled:opacity-30 touch-target haptic-press"
+                        className="p-1.5 rounded-xl material-thin vibrancy-label hover:opacity-90 disabled:opacity-30 touch-target haptic-press"
                       >
-                        <ChevronLeft className="w-4 h-4" />
+                        <ChevronLeft className="w-3.5 h-3.5" />
                       </button>
                       <button
                         type="button"
                         onClick={handleAdvanceNextStep}
                         aria-label="Biến thể kế tiếp"
-                        className="p-2 rounded-xl material-thin vibrancy-label hover:opacity-90 touch-target haptic-press"
+                        className="p-1.5 rounded-xl material-thin vibrancy-label hover:opacity-90 touch-target haptic-press"
                       >
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Sub-mode Tab Toggle: Bước 1 (Điền Từ Cloze) ĐỨNG TRƯỚC Bước 2 (Luyện Nói & Chấm Điểm) */}
-                <div className="shrink-0 flex items-center justify-between gap-2 px-1">
-                  <div className="inline-flex p-1 rounded-2xl material-thin">
-                    {/* BƯỚC 1: ĐIỀN TỪ CLOZE (Đứng trước bên trái) */}
+                {/* Sub-mode Tab Toggle: Single-line ergonomic segmented control */}
+                <div className="shrink-0 flex items-center justify-between gap-1.5 px-0.5">
+                  <div className="flex-1 sm:flex-initial inline-grid grid-cols-2 sm:inline-flex p-1 rounded-2xl material-thin gap-1">
+                    {/* BƯỚC 1: ĐIỀN TỪ CLOZE */}
                     <button
                       type="button"
                       onClick={() => setStudioSubMode('cloze')}
-                      className={`inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 text-xs font-bold rounded-xl transition-all touch-target haptic-press ${
+                      className={`inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-xl transition-all whitespace-nowrap touch-target haptic-press ${
                         studioSubMode === 'cloze'
                           ? 'material-regular vibrancy-label shadow-xs'
                           : 'vibrancy-secondary hover:vibrancy-label'
                       }`}
                     >
                       <BookOpen className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                      <span>
+                      <span className="sm:hidden">
+                        1. Điền Từ {currentProgress.clozeCompleted ? '✓' : ''}
+                      </span>
+                      <span className="hidden sm:inline">
                         1. ✍️ Điền Từ Cloze ({currentProgress.clozeCompleted ? 'Đã Xong' : 'Chưa Điền'})
                       </span>
                     </button>
 
-                    {/* BƯỚC 2: LUYỆN NÓI & CHẤM ĐIỂM (Đứng sau bên phải) */}
+                    {/* BƯỚC 2: LUYỆN NÓI & CHẤM ĐIỂM */}
                     <button
                       type="button"
                       onClick={() => setStudioSubMode('speaking')}
-                      className={`inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 text-xs font-bold rounded-xl transition-all touch-target haptic-press ${
+                      className={`inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold rounded-xl transition-all whitespace-nowrap touch-target haptic-press ${
                         studioSubMode === 'speaking'
                           ? 'material-regular vibrancy-label shadow-xs'
                           : 'vibrancy-secondary hover:vibrancy-label'
@@ -881,16 +884,17 @@ export default function App() {
                       ) : (
                         <Mic className="w-3.5 h-3.5 text-[#0284C7] dark:text-sky-300 shrink-0" />
                       )}
-                      <span>2. 🎙️ Luyện Nói & Chấm Điểm</span>
+                      <span className="sm:hidden">2. Luyện Nói & Chấm</span>
+                      <span className="hidden sm:inline">2. 🎙️ Luyện Nói & Chấm Điểm</span>
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1 shrink-0">
                     <button
                       type="button"
                       onClick={() => setActiveTab('levels')}
                       title="Chọn trình độ A2, B1, B2 & Chế độ học tuần tự"
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-2xl material-thin vibrancy-label hover:opacity-90 touch-target haptic-press"
+                      className="inline-flex items-center justify-center gap-1 p-2 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-2xl material-thin vibrancy-label hover:opacity-90 touch-target haptic-press"
                     >
                       <Layers className="w-3.5 h-3.5 text-[#0284C7] dark:text-sky-400" />
                       <span className="hidden md:inline">Trình Độ A2·B1·B2</span>
@@ -900,7 +904,7 @@ export default function App() {
                       type="button"
                       onClick={() => setIsUpdaterModalOpen(true)}
                       aria-label="Sửa cú pháp và từ vựng"
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-2xl material-thin text-[#0284C7] dark:text-sky-300 hover:opacity-90 touch-target haptic-press"
+                      className="inline-flex items-center justify-center gap-1 p-2 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-2xl material-thin text-[#0284C7] dark:text-sky-300 hover:opacity-90 touch-target haptic-press"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">Sửa Câu</span>
@@ -909,7 +913,7 @@ export default function App() {
                 </div>
 
                 {/* Sub-Card Content Container */}
-                <div className="flex-1 min-h-0 overflow-y-auto rounded-3xl">
+                <div className="flex-1 min-h-0 overflow-y-auto rounded-3xl no-scrollbar">
                   {studioSubMode === 'cloze' ? (
                     <ClozeExerciseCard
                       variation={currentVariation}

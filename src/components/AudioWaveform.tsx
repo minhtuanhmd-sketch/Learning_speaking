@@ -75,24 +75,24 @@ export const AudioWaveform: React.FC<AudioWaveformProps> = ({
 
   return (
     <div
-      className="p-3.5 sm:p-4 rounded-2xl material-thin transition-colors gpu-layer"
+      className="p-2.5 sm:p-3.5 rounded-2xl material-thin transition-colors gpu-layer"
       data-testid="audio-waveform-panel"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-        <span className="text-xs font-semibold vibrancy-label">
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <span className="text-[11px] sm:text-xs font-semibold vibrancy-label truncate">
           {statusText}
         </span>
-        <span className="text-xs font-mono vibrancy-secondary tabular-nums">
+        <span className="text-[10px] sm:text-xs font-mono vibrancy-secondary tabular-nums shrink-0">
           {mode === 'tts_slow'
-            ? '0.8x (Articulatory Focus)'
+            ? '0.8x'
             : mode === 'tts_normal'
-            ? '1.0x (Natural Prosody)'
-            : '16kHz PCM / ProMotion GPU'}
+            ? '1.0x'
+            : '16kHz PCM'}
         </span>
       </div>
 
       <div
-        className="h-11 flex items-center justify-between gap-1 px-2"
+        className="h-8 sm:h-10 flex items-center justify-between gap-1 px-1.5"
         aria-hidden="true"
       >
         {animatedBars.map((level, index) => (
